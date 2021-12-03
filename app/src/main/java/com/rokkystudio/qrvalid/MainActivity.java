@@ -1,5 +1,6 @@
 package com.rokkystudio.qrvalid;
 
+import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 import static android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW;
 
 import android.Manifest;
@@ -10,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.os.Vibrator;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
@@ -35,6 +37,8 @@ public class MainActivity extends Activity
 {
     private static final int CAMERA_REQUEST_CODE = 100;
 
+    PowerManager.WakeLock mWakeLock = null;
+
     private QuaredBarcodeView mBarcodeView;
     private String mLastBarcode;
     private Vibrator mVibrator;
@@ -50,6 +54,9 @@ public class MainActivity extends Activity
         mWebView = findViewById(R.id.WebView);
         if (mWebView == null) return;
         mWebView.setWebViewClient(new MyWebViewClient());
+
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        mWakeLock = powerManager.newWakeLock(FLAG_KEEP_SCREEN_ON, "QRValid:WakeTag");
 
         WebSettings settings = mWebView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -91,16 +98,34 @@ public class MainActivity extends Activity
         }
     }
 
+    @SuppressLint("WakelockTimeout")
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
-        mBarcodeView.resume();
+        if (mBarcodeView != null) {
+            mBarcodeView.resume();
+        }
+
+        if (mWakeLock != null) {
+            mWakeLock.acquire();
+        }
+
+
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
-        mBarcodeView.pause();
+
+        if (mBarcodeView != null) {
+            mBarcodeView.pause();
+        }
+
+        if (mWakeLock != null) {
+            mWakeLock.release();
+        }
     }
 
     @Override
@@ -121,7 +146,8 @@ public class MainActivity extends Activity
 
             if (mWebView == null) return;
             if (isValidUrl(barcode)) {
-                mWebView.loadUrl("file:///android_asset/loading.html");
+                // mWebView.loadUrl("file:///android_asset/loading.html");
+                mWebView.loadUrl(barcode);
             } else {
                 mWebView.loadUrl("file:///android_asset/wrong.html");
             }
@@ -137,6 +163,32 @@ public class MainActivity extends Activity
         @Override
         public void onReceivedSslError(WebView webView, SslErrorHandler handler, SslError error) {
             handler.cancel();
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            injectCSS();
+            super.onPageFinished(view, url);
+        }
+
+        private void injectCSS() {
+            try {
+                InputStream inputStream = getAssets().open("style.css");
+                byte[] buffer = new byte[inputStream.available()];
+                inputStream.read(buffer);
+                inputStream.close();
+                String encoded = Base64.encodeToString(buffer, Base64.NO_WRAP);
+                webView.loadUrl("javascript:(function() {" +
+                        "var parent = document.getElementsByTagName('head').item(0);" +
+                        "var style = document.createElement('style');" +
+                        "style.type = 'text/css';" +
+                        // Tell the browser to BASE64-decode the string into your script !!!
+                        "style.innerHTML = window.atob('" + encoded + "');" +
+                        "parent.appendChild(style)" +
+                        "})()");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
