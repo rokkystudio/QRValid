@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<style type="text/css">
+
+.animated {
+    -webkit-animation: rotation 1s infinite linear forwards;
+    animation: rotation 1s infinite linear forwards;
+}
+
+.pulse {
+    animation-name: pulse;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale3d(0.5, 0.5, 0.5);
+    opacity: 0.3
+  }
+  100% {
+    transform: scale3d(1.1, 1.1, 1.1);
+    opacity: 0
+  }
+}
+
+.container-app-loader {
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 10000000000;
+    background: #fff;
+    opacity: 1;
+}
+
+.container-app-logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -61px 0 0 -61px;
+    width: 122px;
+    height: 122px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: url(hex.svg) no-repeat center center;
+}
+
+.app-logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -50px 0 0 -50px;
+    width: 100px;
+    height: 100px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: url(logo.svg) no-repeat center center;
+}
+
+.container-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -100px 0 0 -100px;
+    width: 200px;
+    height: 200px;
+    background: #fff url(hex_blue.svg) no-repeat center center;
+    opacity: .3;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container-app-loader" id="start-app-loader">
+    <div class="container-pulse pulse animated"></div>
+    <div class="container-app-logo">
+        <div class="app-logo"></div>
+    </div>
+</div>
+
+</body>
+</html>

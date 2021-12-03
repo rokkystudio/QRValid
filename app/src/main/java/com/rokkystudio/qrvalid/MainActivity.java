@@ -111,7 +111,8 @@ public class MainActivity extends Activity
     private class MyBarcodeCallback implements BarcodeCallback
     {
         @Override
-        public void barcodeResult (BarcodeResult result){
+        public void barcodeResult(BarcodeResult result)
+        {
             String barcode = result.getText();
             if (barcode == null || barcode.equals(mLastBarcode)) return;
             Toast.makeText(MainActivity.this, barcode, Toast.LENGTH_SHORT).show();
@@ -119,11 +120,17 @@ public class MainActivity extends Activity
             mLastBarcode = barcode;
 
             if (mWebView == null) return;
-            if (barcode.contains("gosuslugi.ru/vaccine/cert/verify/") ||
-                barcode.contains("gosuslugi.ru/covid-cert/verify/")    ) {
-                mWebView.loadUrl(barcode);
+            if (isValidUrl(barcode)) {
+                mWebView.loadUrl("file:///android_asset/loading.html");
+            } else {
+                mWebView.loadUrl("file:///android_asset/wrong.html");
             }
         }
+    }
+
+    private boolean isValidUrl(String barcode) {
+        return barcode.contains("gosuslugi.ru/vaccine/cert/verify/") ||
+               barcode.contains("gosuslugi.ru/covid-cert/verify/");
     }
 
     private static class MyWebViewClient extends WebViewClient {
