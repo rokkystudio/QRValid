@@ -155,8 +155,8 @@ public class MainActivity extends Activity
     }
 
     private boolean isValidUrl(String barcode) {
-        return barcode.contains("gosuslugi.ru/vaccine/cert/verify/") ||
-               barcode.contains("gosuslugi.ru/covid-cert/verify/");
+        return barcode.contains("gosuslugi.ru/vaccine/cert/") ||
+               barcode.contains("gosuslugi.ru/covid-cert/");
     }
 
     private static class MyWebViewClient extends WebViewClient {
@@ -166,29 +166,9 @@ public class MainActivity extends Activity
         }
 
         @Override
-        public void onPageFinished(WebView view, String url) {
-            injectCSS();
-            super.onPageFinished(view, url);
-        }
-
-        private void injectCSS() {
-            try {
-                InputStream inputStream = getAssets().open("style.css");
-                byte[] buffer = new byte[inputStream.available()];
-                inputStream.read(buffer);
-                inputStream.close();
-                String encoded = Base64.encodeToString(buffer, Base64.NO_WRAP);
-                webView.loadUrl("javascript:(function() {" +
-                        "var parent = document.getElementsByTagName('head').item(0);" +
-                        "var style = document.createElement('style');" +
-                        "style.type = 'text/css';" +
-                        // Tell the browser to BASE64-decode the string into your script !!!
-                        "style.innerHTML = window.atob('" + encoded + "');" +
-                        "parent.appendChild(style)" +
-                        "})()");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        public void onPageFinished(WebView webView, String url) {
+            webView.loadUrl("file:///android_asset/clean.js");
+            super.onPageFinished(webView, url);
         }
     }
 }
