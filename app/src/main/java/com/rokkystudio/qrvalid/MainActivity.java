@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
@@ -30,6 +31,7 @@ import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -159,7 +161,8 @@ public class MainActivity extends Activity
                barcode.contains("gosuslugi.ru/covid-cert/");
     }
 
-    private static class MyWebViewClient extends WebViewClient {
+    private class MyWebViewClient extends WebViewClient
+    {
         @Override
         public void onReceivedSslError(WebView webView, SslErrorHandler handler, SslError error) {
             handler.cancel();
@@ -167,8 +170,27 @@ public class MainActivity extends Activity
 
         @Override
         public void onPageFinished(WebView webView, String url) {
-            webView.loadUrl("file:///android_asset/clean.js");
+            injectJS(webView);
             super.onPageFinished(webView, url);
+        }
+
+        private void injectJS(WebView webView) {
+            try {
+                InputStream inputStream = getAssets().open("clean.js");
+                byte[] buffer = new byte[ inputStream.available() ];
+                inputStream.read(buffer);
+                inputStream.close();
+                String encoded = Base64.encodeToString(buffer, Base64.NO_WRAP);
+                webView.loadUrl("javascript:(function() {" +
+                        "var parent = document.getElementsByTagName('head').item(0);" +
+                        "var script = document.createElement('script');" +
+                        "script.type = 'text/javascript';" +
+                        "script.innerHTML = window.atob('" + encoded + "');" +
+                        "parent.appendChild(script)" +
+                        "})()");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
