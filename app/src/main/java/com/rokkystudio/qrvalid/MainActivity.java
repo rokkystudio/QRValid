@@ -7,15 +7,18 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
@@ -38,7 +41,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener
 {
     private static final int CAMERA_REQUEST_CODE = 100;
 
@@ -120,6 +124,9 @@ public class MainActivity extends AppCompatActivity
         if (mWakeLock != null) {
             mWakeLock.acquire();
         }
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -134,6 +141,9 @@ public class MainActivity extends AppCompatActivity
         if (mWakeLock != null) {
             mWakeLock.release();
         }
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -146,6 +156,27 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.MenuTorch:
+
+                return false;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("TORCH")) {
+            sharedPreferences.getString(key, "");
+        }
+    }
+
 
     private class MyBarcodeCallback implements BarcodeCallback
     {
