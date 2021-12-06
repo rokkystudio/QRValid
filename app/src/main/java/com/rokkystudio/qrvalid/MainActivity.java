@@ -15,6 +15,7 @@ import android.os.PowerManager;
 import android.os.Vibrator;
 import android.util.Base64;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
@@ -23,6 +24,8 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -35,7 +38,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 
-public class MainActivity extends Activity
+public class MainActivity extends AppCompatActivity
 {
     private static final int CAMERA_REQUEST_CODE = 100;
 
@@ -52,6 +55,11 @@ public class MainActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = findViewById(R.id.Toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
 
         mWebView = findViewById(R.id.WebView);
         if (mWebView == null) return;
@@ -112,8 +120,6 @@ public class MainActivity extends Activity
         if (mWakeLock != null) {
             mWakeLock.acquire();
         }
-
-
     }
 
     @Override
@@ -133,6 +139,12 @@ public class MainActivity extends Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return mBarcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     private class MyBarcodeCallback implements BarcodeCallback
@@ -174,7 +186,8 @@ public class MainActivity extends Activity
             super.onPageFinished(webView, url);
         }
 
-        private void injectJS(WebView webView) {
+        private void injectJS(WebView webView)
+        {
             try {
                 InputStream inputStream = getAssets().open("clean.js");
                 byte[] buffer = new byte[ inputStream.available() ];
