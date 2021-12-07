@@ -6,25 +6,32 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
 
 import androidx.core.content.ContextCompat;
-import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 
-public class QuaredBarcodeView extends DecoratedBarcodeView
+import com.journeyapps.barcodescanner.BarcodeCallback;
+import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.DecoratedBarcodeView;
+import com.journeyapps.barcodescanner.camera.CameraSettings;
+
+public class ScannerView extends DecoratedBarcodeView
 {
+    private static final int CAMERA_BACK_ID  = 0;
+    private static final int CAMERA_FRONT_ID = 1;
     private Drawable mAimDrawable;
 
-    public QuaredBarcodeView(Context context) {
+    public ScannerView(Context context) {
         super(context);
         init();
     }
 
-    public QuaredBarcodeView(Context context, AttributeSet attrs) {
+    public ScannerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public QuaredBarcodeView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ScannerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -33,9 +40,26 @@ public class QuaredBarcodeView extends DecoratedBarcodeView
     {
         setStatusText("");
         getViewFinder().setLaserVisibility(false);
+
         // mAimDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_aim);
         // Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_aim);
         // getViewFinder().drawResultBitmap(bitmap);
+    }
+
+    public void switchToFront() {
+        pause();
+        CameraSettings cameraSettings = getCameraSettings();
+        cameraSettings.setRequestedCameraId(CAMERA_FRONT_ID);
+        setCameraSettings(cameraSettings);
+        resume();
+    }
+
+    public void switchToBack() {
+        pause();
+        CameraSettings cameraSettings = getCameraSettings();
+        cameraSettings.setRequestedCameraId(CAMERA_BACK_ID);
+        setCameraSettings(cameraSettings);
+        resume();
     }
 
     @Override

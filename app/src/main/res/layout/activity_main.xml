@@ -20,7 +20,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.rokkystudio.qrvalid.QuaredBarcodeView
+    <com.rokkystudio.qrvalid.ScannerView
         android:id="@+id/BarcodeView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

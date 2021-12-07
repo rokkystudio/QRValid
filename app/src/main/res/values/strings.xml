@@ -2,7 +2,8 @@
     <string name="app_name">QRValid</string>
     <string name="menu_torch">Torch</string>
     <string name="menu_sound">Sound</string>
-    <string name="menu_vibrate">Vibrate</string>
+    <string name="menu_vibration">Vibration</string>
     <string name="menu_clear">Clear</string>
     <string name="menu_more">More</string>
+    <string name="menu_camera">Switch camera</string>
 </resources>

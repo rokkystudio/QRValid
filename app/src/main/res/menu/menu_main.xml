@@ -10,28 +10,29 @@
 
         <menu>
             <item
+                android:id="@+id/MenuCamera"
+                android:title="@string/menu_camera"
+                android:icon="@drawable/camera_front" />
+
+            <item
                 android:id="@+id/MenuTorch"
                 android:title="@string/menu_torch"
-                android:icon="@drawable/torch"
-                app:showAsAction="ifRoom" />
+                android:icon="@drawable/torch_on" />
 
             <item
                 android:id="@+id/MenuSound"
                 android:title="@string/menu_sound"
-                android:icon="@drawable/sound"
-                app:showAsAction="ifRoom" />
+                android:icon="@drawable/sound_on" />
 
             <item
-                android:id="@+id/MenuVibrate"
-                android:title="@string/menu_vibrate"
-                android:icon="@drawable/vibrate"
-                app:showAsAction="ifRoom" />
+                android:id="@+id/MenuVibration"
+                android:title="@string/menu_vibration"
+                android:icon="@drawable/vibration_on" />
 
             <item
                 android:id="@+id/MenuClear"
                 android:title="@string/menu_clear"
-                android:icon="@drawable/clear"
-                app:showAsAction="ifRoom" />
+                android:icon="@drawable/clear" />
         </menu>
     </item>
 </menu>
