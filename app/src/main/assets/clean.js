@@ -31,7 +31,7 @@ function clean(childs)
         }
 
         if ((itemTag === 'a') && (itemClass.indexOf('button') !== -1)) {
-    		item.parentElement.removeChild(item);
+    		//item.parentElement.removeChild(item);
     		continue;
         }
 
