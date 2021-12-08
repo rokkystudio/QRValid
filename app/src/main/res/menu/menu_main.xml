@@ -30,9 +30,9 @@
                 android:icon="@drawable/vibration_on" />
 
             <item
-                android:id="@+id/MenuClear"
-                android:title="@string/menu_clear"
-                android:icon="@drawable/clear" />
+                android:id="@+id/MenuHelp"
+                android:title="@string/menu_help"
+                android:icon="@drawable/help" />
         </menu>
     </item>
 </menu>

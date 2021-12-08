@@ -16,6 +16,10 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:contentInsetStart="15dp"
+            app:contentInsetLeft="15dp"
+            app:logo="@drawable/app"
+            app:titleMarginStart="25dp"
             app:popupTheme="@style/MyTheme.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>

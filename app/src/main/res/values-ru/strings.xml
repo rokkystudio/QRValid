@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QR Тест Covid-19</string>
+
+    <string name="menu_torch">Фонарь</string>
+    <string name="menu_sound">Звук</string>
+    <string name="menu_vibration">Вибрация</string>
+    <string name="menu_help">Помощь</string>
+    <string name="menu_more">Меню</string>
+    <string name="menu_camera">Смена камеры</string>
+
+    <string name="dialog_clear">Очистить результат сканирования?</string>
+</resources>

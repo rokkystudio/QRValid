@@ -12,32 +12,30 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.client.android.BeepManager;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DefaultDecoderFactory;
-import com.journeyapps.barcodescanner.camera.CameraSettings;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -56,11 +54,10 @@ public class MainActivity extends AppCompatActivity implements
 
     private PowerManager.WakeLock mWakeLock = null;
 
+    private ResponseManager mResponseManager = null;
+
     private ScannerView mBarcodeView;
     private String mLastBarcode;
-
-    private Vibrator mVibrator;
-    private BeepManager mBeepManager;
 
     private WebView mWebView;
 
@@ -76,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = findViewById(R.id.Toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            toolbar.setLogo(R.mipmap.ic_launcher);
         }
 
         mWebView = findViewById(R.id.WebView);
@@ -94,15 +90,14 @@ public class MainActivity extends AppCompatActivity implements
             CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView, true);
         }
 
-        mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        mBeepManager = new BeepManager(this);
+        mResponseManager = new ResponseManager(this);
 
         mBarcodeView = findViewById(R.id.BarcodeView);
         if (mBarcodeView == null) return;
         Collection<BarcodeFormat> formats = Collections.singletonList(BarcodeFormat.QR_CODE);
         mBarcodeView.setDecoderFactory(new DefaultDecoderFactory(formats));
 
-        mBarcodeView.setOnClickListener(view -> { initWebView(); });
+        mBarcodeView.setOnClickListener(view -> { showClearDialog(); });
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA }, CAMERA_REQUEST_CODE);
@@ -293,7 +288,9 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(this, "Sounds are heard.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.sound_on);
 
-                mBeepManager.playBeepSound();
+                if (mResponseManager != null) {
+                    mResponseManager.soundActivate();
+                }
             } else {
                 Toast.makeText(this, "Sounds are silent.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.sound_off);
@@ -312,17 +309,20 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(this, "Vibration is on.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.vibration_on);
 
-                long[] pattern = { 0, 50, 30, 50, 30, 50, 30, 200 };
-                mVibrator.vibrate(pattern, -1);
+                if (mResponseManager != null) {
+                    mResponseManager.vibrateActivate();
+                }
             } else {
                 Toast.makeText(this, "Vibration is off.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.vibration_off);
             }
         }
 
-        // CLEAR MENU BUTTON CLICK
-        else if (item.getItemId() == R.id.MenuClear) {
-            initWebView();
+        // HELP MENU BUTTON CLICK
+        else if (item.getItemId() == R.id.MenuHelp) {
+            if (mWebView != null) {
+                mWebView.loadUrl("file:///android_asset/wrong.html");
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -373,11 +373,15 @@ public class MainActivity extends AppCompatActivity implements
             Toast.makeText(MainActivity.this, barcode, Toast.LENGTH_SHORT).show();
 
             if (mSharedPreferences.getBoolean(STATE_SOUND, false)) {
-                mBeepManager.playBeepSound();
+                if (mResponseManager != null) {
+                    mResponseManager.soundScan();
+                }
             }
 
             if (mSharedPreferences.getBoolean(STATE_VIBRATION, false)) {
-                mVibrator.vibrate(400);
+                if (mResponseManager != null) {
+                    mResponseManager.vibrateOnce();
+                }
             }
 
             mLastBarcode = barcode;
@@ -397,10 +401,28 @@ public class MainActivity extends AppCompatActivity implements
                barcode.contains("gosuslugi.ru/covid-cert/");
     }
 
+    private void showClearDialog()
+    {
+        if (mResponseManager != null) {
+            mResponseManager.vibrateOnce();
+        }
+
+        new AlertDialog.Builder(this, R.style.Theme_AppCompat_Dialog_Alert)
+            .setMessage(R.string.dialog_clear)
+            .setPositiveButton(android.R.string.yes, (dialog, which) -> initWebView())
+            .setNegativeButton(android.R.string.no, null)
+            .show();
+    }
+
     private void initWebView() {
         if (mWebView != null) {
+            mLastBarcode = "";
             mWebView.loadUrl("file:///android_asset/index.html");
         }
+    }
+
+    private void validateCertificate(String html) {
+        Toast.makeText(this, html, Toast.LENGTH_LONG).show();
     }
 
     private class MyWebViewClient extends WebViewClient
@@ -412,6 +434,15 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onPageFinished(WebView webView, String url) {
+            webView.evaluateJavascript(
+              // "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+                "(function() {" +
+                          "var elem = document.querySelectorAll('.status-container.complete, .complete-image');" +
+                          "var style = getComputedStyle(elem);" +
+                          "return (elem);" +
+                      "})();",
+
+                    MainActivity.this::validateCertificate);
             injectJS(webView);
             super.onPageFinished(webView, url);
         }
