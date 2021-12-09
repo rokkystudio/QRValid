@@ -10,4 +10,13 @@
     <string name="menu_camera">Смена камеры</string>
 
     <string name="dialog_clear">Очистить результат сканирования?</string>
+    <string name="toast_front_camera">Передняя камера включена.</string>
+    <string name="toast_back_camera">Задняя камера включена.</string>
+    <string name="toast_torch_on">Фонарь включен.</string>
+    <string name="toast_torch_off">Фонарь выключен.</string>
+    <string name="toast_sound_on">Звук включен.</string>
+    <string name="toast_sound_off">Звук выключен.</string>
+    <string name="toast_vibration_on">Вибрация включена.</string>
+    <string name="toast_vibration_off">Вибрация выключена.</string>
+    <string name="toast_torch_not_available">Фонарь не доступен.</string>
 </resources>

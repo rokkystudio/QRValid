@@ -9,4 +9,13 @@
     <string name="menu_camera">Switch camera</string>
 
     <string name="dialog_clear">Clear scan result?</string>
+    <string name="toast_front_camera">Front camera activation</string>
+    <string name="toast_back_camera">Back camera activation</string>
+    <string name="toast_torch_on">Torch is burning.</string>
+    <string name="toast_torch_off">Torch is extinguished.</string>
+    <string name="toast_sound_on">Sounds are heard.</string>
+    <string name="toast_sound_off">Sounds are silent.</string>
+    <string name="toast_vibration_on">Vibration is on.</string>
+    <string name="toast_vibration_off">Vibration is off.</string>
+    <string name="toast_torch_not_available">Torch feature not available</string>
 </resources>

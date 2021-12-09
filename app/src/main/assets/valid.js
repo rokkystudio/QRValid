@@ -1,10 +1,15 @@
+function() {
+    var elem = document.querySelectorAll('.status-container.complete, .complete-image');
+    var style = getComputedStyle(elem);
+    return (elem);
+}
+
 window.onload = setTimeout(start, 100);
 
 function start() {
     // document.body.innerHTML = document.body.innerHTML.replace("flex-container", "");
     clean(document.body.childNodes);
 }
-
 
 function clean(childs)
 {
@@ -17,7 +22,7 @@ function clean(childs)
         	itemTag = item.tagName.toLowerCase();
         }
 
-        // Сompletely skipping SVG
+        // Completely skipping SVG
         if (itemTag === 'svg') continue;
 
         var itemClass = "";
