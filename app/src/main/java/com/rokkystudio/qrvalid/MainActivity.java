@@ -19,8 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -61,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements
     private String mLastBarcode;
 
     private WebView mWebView;
-    private boolean mWaitForResult = false;
 
     @Override
     @SuppressLint("SetJavaScriptEnabled")
@@ -99,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements
         Collection<BarcodeFormat> formats = Collections.singletonList(BarcodeFormat.QR_CODE);
         mBarcodeView.setDecoderFactory(new DefaultDecoderFactory(formats));
 
-        mBarcodeView.setOnClickListener(view -> showClearDialog());
+        mBarcodeView.setOnClickListener(view -> { showClearDialog(); });
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA }, CAMERA_REQUEST_CODE);
@@ -244,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements
             editor.apply();
 
             if (isFrontCamera) {
-                Toast.makeText(this, R.string.toast_front_camera, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Front camera activation", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.camera_front);
 
                 if (mBarcodeView != null) {
@@ -252,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
 
             } else {
-                Toast.makeText(this, R.string.toast_back_camera, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Back camera activation", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.camera_back);
 
                 if (mBarcodeView != null) {
@@ -270,10 +268,10 @@ public class MainActivity extends AppCompatActivity implements
             editor.apply();
 
             if (stateTorch) {
-                Toast.makeText(this, R.string.toast_torch_on, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Torch is burning.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.torch_on);
             } else {
-                Toast.makeText(this, R.string.toast_torch_off, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Torch is extinguished.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.torch_off);
             }
         }
@@ -287,14 +285,14 @@ public class MainActivity extends AppCompatActivity implements
             editor.apply();
 
             if (stateSound) {
-                Toast.makeText(this, R.string.toast_sound_on, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Sounds are heard.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.sound_on);
 
                 if (mResponseManager != null) {
                     mResponseManager.soundActivate();
                 }
             } else {
-                Toast.makeText(this, R.string.toast_sound_off, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Sounds are silent.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.sound_off);
             }
         }
@@ -308,14 +306,14 @@ public class MainActivity extends AppCompatActivity implements
             editor.apply();
 
             if (stateVibration) {
-                Toast.makeText(this, R.string.toast_vibration_on, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vibration is on.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.vibration_on);
 
                 if (mResponseManager != null) {
                     mResponseManager.vibrateActivate();
                 }
             } else {
-                Toast.makeText(this, R.string.toast_vibration_off, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vibration is off.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.vibration_off);
             }
         }
@@ -323,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements
         // HELP MENU BUTTON CLICK
         else if (item.getItemId() == R.id.MenuHelp) {
             if (mWebView != null) {
-                mWebView.loadUrl("file:///android_asset/help.html");
+                mWebView.loadUrl("file:///android_asset/wrong.html");
             }
         }
 
@@ -345,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements
     private void initTorch()
     {
         if (!hasTorch()) {
-            Toast.makeText(this, R.string.toast_torch_not_available, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Torch feature not available", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -391,7 +389,6 @@ public class MainActivity extends AppCompatActivity implements
             if (mWebView == null) return;
             if (isValidUrl(barcode)) {
                 // mWebView.loadUrl("file:///android_asset/loading.html");
-                mWaitForResult = true;
                 mWebView.loadUrl(barcode);
             } else {
                 mWebView.loadUrl("file:///android_asset/wrong.html");
@@ -430,35 +427,26 @@ public class MainActivity extends AppCompatActivity implements
 
     private class MyWebViewClient extends WebViewClient
     {
-        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-            mWaitForResult = false;
-        }
-
         @Override
         public void onReceivedSslError(WebView webView, SslErrorHandler handler, SslError error) {
             handler.cancel();
-            mWaitForResult = false;
         }
 
         @Override
-        public void onPageFinished(WebView webView, String url)
-        {
-            if (mWaitForResult) {
-                webView.evaluateJavascript(
-                        "(function() {" +
-                        "var cert = document.querySelector(\".cert-name\");" +
-                        "var result = !cert.classList.contains(\"hide\");" +
-                        "return (cert.innerHtml);" +
-                        "})();",
+        public void onPageFinished(WebView webView, String url) {
+            webView.evaluateJavascript(
+              // "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+                "(function() {" +
+                          "var elem = document.querySelectorAll('.status-container.complete, .complete-image');" +
+                          "var style = getComputedStyle(elem);" +
+                          "return (elem);" +
+                      "})();",
                     MainActivity.this::validateCertificate);
-            }
 
-            mWaitForResult = false;
             injectCSS(webView);
             super.onPageFinished(webView, url);
         }
 
-        /*
         private void injectJS(WebView webView)
         {
             try {
@@ -478,7 +466,6 @@ public class MainActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         }
-        */
 
         private void injectCSS(WebView webView) {
             try {
