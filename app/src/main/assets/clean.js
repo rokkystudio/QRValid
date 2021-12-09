@@ -1,7 +1,8 @@
 window.onload = setTimeout(start, 100);
 
 function start() {
-    // document.body.innerHTML = document.body.innerHTML.replace("flex-container", "");
+    document.getElementsByClassName('red test');
+    document.body.innerHTML = document.body.innerHTML.replace("flex-container", "");
     clean(document.body.childNodes);
 }
 

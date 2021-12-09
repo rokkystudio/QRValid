@@ -437,9 +437,8 @@ public class MainActivity extends AppCompatActivity implements
             webView.evaluateJavascript(
               // "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
                 "(function() {" +
-                          "var elem = document.querySelectorAll('.status-container.complete, .complete-image');" +
-                          "var style = getComputedStyle(elem);" +
-                          "return (elem);" +
+                        "document.body.innerHTML.toUpperCase().indexOf(\"НЕ ДЕЙСТВИТЕЛЕН\");" +
+                          "return ();" +
                       "})();",
                     MainActivity.this::validateCertificate);
 
