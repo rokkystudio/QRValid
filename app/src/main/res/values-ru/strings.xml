@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">QR Тест Covid-19</string>
+    <string name="app_name">QR Тест</string>
 
     <string name="menu_torch">Фонарь</string>
     <string name="menu_sound">Звук</string>

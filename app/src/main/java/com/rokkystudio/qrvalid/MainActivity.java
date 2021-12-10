@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
-import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -97,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements
         Collection<BarcodeFormat> formats = Collections.singletonList(BarcodeFormat.QR_CODE);
         mBarcodeView.setDecoderFactory(new DefaultDecoderFactory(formats));
 
-        mBarcodeView.setOnClickListener(view -> { showClearDialog(); });
+        mBarcodeView.setOnClickListener(view -> showClearDialog());
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA }, CAMERA_REQUEST_CODE);
@@ -125,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements
         if (mSharedPreferences.getBoolean(FRONT_CAMERA, false)) {
             mBarcodeView.switchToFront();
         } else {
+
             mBarcodeView.switchToBack();
         }
 
@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements
         // HELP MENU BUTTON CLICK
         else if (item.getItemId() == R.id.MenuHelp) {
             if (mWebView != null) {
-                mWebView.loadUrl("file:///android_asset/wrong.html");
+                mWebView.loadUrl("file:///android_asset/help.html");
             }
         }
 
@@ -434,6 +434,7 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onPageFinished(WebView webView, String url) {
+            /*
             webView.evaluateJavascript(
               // "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
                 "(function() {" +
@@ -442,6 +443,7 @@ public class MainActivity extends AppCompatActivity implements
                           "return (elem);" +
                       "})();",
                     MainActivity.this::validateCertificate);
+             */
 
             injectCSS(webView);
             super.onPageFinished(webView, url);
