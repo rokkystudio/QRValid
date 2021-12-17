@@ -18,7 +18,7 @@
             android:background="?attr/colorPrimary"
             app:contentInsetStart="15dp"
             app:contentInsetLeft="15dp"
-            app:logo="@drawable/app"
+            app:logo="@mipmap/ic_launcher"
             app:titleMarginStart="25dp"
             app:popupTheme="@style/MyTheme.PopupOverlay" />
 
