@@ -39,6 +39,14 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+
+import ezvcard.Ezvcard;
+import ezvcard.VCard;
+import ezvcard.VCardVersion;
+import ezvcard.property.FormattedName;
+import ezvcard.property.StructuredName;
+import ezvcard.property.Telephone;
 
 public class MainActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener
@@ -370,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements
             if (barcode == null || barcode.equals(mLastBarcode)) return;
 
             mWebView.loadUrl("about:blank");
-            Toast.makeText(MainActivity.this, barcode, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(MainActivity.this, barcode, Toast.LENGTH_SHORT).show();
 
             if (mSharedPreferences.getBoolean(STATE_SOUND, false)) {
                 if (mResponseManager != null) {
@@ -387,11 +395,36 @@ public class MainActivity extends AppCompatActivity implements
             mLastBarcode = barcode;
 
             if (mWebView == null) return;
+
+            parseVCard(barcode);
+            String data = barcode.replace("\r\n", "<br>").replace ("\n", "<br>");
+            mWebView.loadData(data, "text/html", "utf-8");
+
+            /*
             if (isValidUrl(barcode)) {
                 // mWebView.loadUrl("file:///android_asset/loading.html");
                 mWebView.loadUrl(barcode);
             } else {
                 mWebView.loadUrl("file:///android_asset/wrong.html");
+            }
+            */
+        }
+    }
+
+    private void parseVCard(String data)
+    {
+        List<VCard> vcards = Ezvcard.parse(data).all();
+        for (VCard vcard : vcards)
+        {
+            // StructuredName name = vcard.getStructuredName();
+            VCardVersion version = vcard.getVersion();
+            if (version != null) {
+                //Toast.makeText(this, name.getFamily() + " " + name.getGiven(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, version.getVersion(), Toast.LENGTH_SHORT).show();
+            }
+
+            for (Telephone tel : vcard.getTelephoneNumbers()) {
+                System.out.println(tel.getTypes() + ": " + tel.getText());
             }
         }
     }
