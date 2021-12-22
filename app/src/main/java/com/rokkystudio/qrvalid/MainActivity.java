@@ -51,6 +51,36 @@ import ezvcard.property.Telephone;
 public class MainActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener
 {
+    // Webpage
+    // Location
+    // Google Maps
+    // WAZE
+    // vCard
+    // Social media
+    // Facebook
+    // LinkedIn
+    // Instagram Nametag
+    // Pinterest Pincode
+    // Snapchat Snapcode
+    // PDF
+    // App download
+    // Restaurant
+    // Landing Page
+    // Video
+    // Image Gallery
+    // MP3
+    // Coupon
+    // Text
+    // Rating and Feedback
+    // Event
+    // Payment
+    // Message
+    // SMS
+    // WhatsApp
+    // meCard
+    // Wi-Fi
+    // Dynamic
+
     private static final int CAMERA_REQUEST_CODE = 100;
 
     private SharedPreferences mSharedPreferences = null;

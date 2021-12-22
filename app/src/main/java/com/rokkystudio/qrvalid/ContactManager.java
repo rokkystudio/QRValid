@@ -19,8 +19,6 @@ public class ContactManager
 {
     private void addVCard(Context context, VCard vCard)
     {
-        vCard.getTelephoneNumbers()
-
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
         int rawContactInsertIndex = 0;
 
@@ -86,16 +84,5 @@ public class ContactManager
             .withValue(StructuredName.GIVEN_NAME, name)
             .withValue(StructuredName.IN_VISIBLE_GROUP, true)
             .build();
-    }
-
-
-    public void insert() {
-        Intent intent = new Intent(
-            ContactsContract.Intents.SHOW_OR_CREATE_CONTACT,
-            ContactsContract.Contacts.CONTENT_URI);
-        intent.setData(Uri.parse("tel:911"));//specify your number here
-        intent.putExtra(ContactsContract.Intents.Insert.COMPANY, "Emergency USA");
-        startActivity(intent);
-        Toast.makeText(this, "Record inserted", Toast.LENGTH_SHORT).show();
     }
 }
