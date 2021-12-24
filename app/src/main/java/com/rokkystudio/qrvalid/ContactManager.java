@@ -10,10 +10,14 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ezvcard.VCard;
+import ezvcard.property.Email;
+import ezvcard.property.Telephone;
 
 public class ContactManager
 {
@@ -36,14 +40,21 @@ public class ContactManager
             operations.add(opGivenName(vCard.getStructuredName().getGiven(), rawContactInsertIndex));
         }
 
-        operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
-                .withValue(ContactsContract.Data.MIMETYPE,
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER,"23232343434")
-                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, "4343")
-                .build());
+        if (vCard.getTelephoneNumbers() != null) {
+            for (Telephone telephone : vCard.getTelephoneNumbers()) {
+                if (telephone != null) {
+                    operations.add(opPhoneNumber(telephone.getText(), "TYPE", rawContactInsertIndex));
+                }
+            }
+        }
 
+        if (vCard.getEmails() != null) {
+            for (Email email : vCard.getEmails()) {
+                if (email != null) {
+                    email.
+                }
+            }
+        }
         operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                 .withValue(ContactsContract.Data.MIMETYPE,
@@ -83,6 +94,15 @@ public class ContactManager
             .withValue(Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
             .withValue(StructuredName.GIVEN_NAME, name)
             .withValue(StructuredName.IN_VISIBLE_GROUP, true)
+            .build();
+    }
+
+    private ContentProviderOperation opPhoneNumber(String number, String type, int index) {
+        return ContentProviderOperation.newInsert(Data.CONTENT_URI)
+            .withValueBackReference(Data.RAW_CONTACT_ID, index)
+            .withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
+            .withValue(Phone.NUMBER, number)
+            .withValue(Phone.TYPE, type)
             .build();
     }
 }
