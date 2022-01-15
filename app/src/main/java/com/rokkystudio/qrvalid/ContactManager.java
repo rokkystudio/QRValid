@@ -3,17 +3,14 @@ package com.rokkystudio.qrvalid;
 import android.accounts.AccountManager;
 import android.content.ContentProviderOperation;
 import android.content.Context;
-import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.Data;
-import android.provider.ContactsContract.CommonDataKinds.StructuredName;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.CommonDataKinds;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ezvcard.VCard;
 import ezvcard.property.Email;
@@ -43,7 +40,7 @@ public class ContactManager
         if (vCard.getTelephoneNumbers() != null) {
             for (Telephone telephone : vCard.getTelephoneNumbers()) {
                 if (telephone != null) {
-                    operations.add(opPhoneNumber(telephone.getText(), "TYPE", rawContactInsertIndex));
+                    operations.add(opPhoneNumber(telephone.getText(), rawContactInsertIndex));
                 }
             }
         }
@@ -51,17 +48,10 @@ public class ContactManager
         if (vCard.getEmails() != null) {
             for (Email email : vCard.getEmails()) {
                 if (email != null) {
-                    email.
+                    operations.add(opEmail(email.getValue(), rawContactInsertIndex));
                 }
             }
         }
-        operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
-                .withValue(ContactsContract.Data.MIMETYPE,
-                        ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Email.DATA, "")
-                .withValue(ContactsContract.CommonDataKinds.Email.TYPE, "")
-                .build());
 
         try {
             context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operations);
@@ -74,8 +64,8 @@ public class ContactManager
         return ContentProviderOperation.newInsert(Data.CONTENT_URI)
             .withValueBackReference(Data.RAW_CONTACT_ID, index)
             .withValue(Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-            .withValue(StructuredName.DISPLAY_NAME, name)
-            .withValue(StructuredName.IN_VISIBLE_GROUP, true)
+            .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+            .withValue(CommonDataKinds.StructuredName.IN_VISIBLE_GROUP, true)
             .build();
     }
 
@@ -83,8 +73,8 @@ public class ContactManager
         return ContentProviderOperation.newInsert(Data.CONTENT_URI)
             .withValueBackReference(Data.RAW_CONTACT_ID, index)
             .withValue(Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-            .withValue(StructuredName.FAMILY_NAME, name)
-            .withValue(StructuredName.IN_VISIBLE_GROUP, true)
+            .withValue(CommonDataKinds.StructuredName.FAMILY_NAME, name)
+            .withValue(CommonDataKinds.StructuredName.IN_VISIBLE_GROUP, true)
             .build();
     }
 
@@ -92,17 +82,26 @@ public class ContactManager
         return ContentProviderOperation.newInsert(Data.CONTENT_URI)
             .withValueBackReference(Data.RAW_CONTACT_ID, index)
             .withValue(Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-            .withValue(StructuredName.GIVEN_NAME, name)
-            .withValue(StructuredName.IN_VISIBLE_GROUP, true)
+            .withValue(CommonDataKinds.StructuredName.GIVEN_NAME, name)
+            .withValue(CommonDataKinds.StructuredName.IN_VISIBLE_GROUP, true)
             .build();
     }
 
-    private ContentProviderOperation opPhoneNumber(String number, String type, int index) {
+    private ContentProviderOperation opPhoneNumber(String number, int index) {
         return ContentProviderOperation.newInsert(Data.CONTENT_URI)
             .withValueBackReference(Data.RAW_CONTACT_ID, index)
-            .withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
-            .withValue(Phone.NUMBER, number)
-            .withValue(Phone.TYPE, type)
+            .withValue(Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+            .withValue(CommonDataKinds.Phone.NUMBER, number)
+            .withValue(CommonDataKinds.Phone.TYPE, CommonDataKinds.Phone.TYPE_MOBILE)
+            .build();
+    }
+
+    private ContentProviderOperation opEmail(String email, int index) {
+        return ContentProviderOperation.newInsert(Data.CONTENT_URI)
+            .withValueBackReference(Data.RAW_CONTACT_ID, index)
+            .withValue(Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+            .withValue(CommonDataKinds.Email.ADDRESS, email)
+            .withValue(CommonDataKinds.Email.TYPE, CommonDataKinds.Email.TYPE_HOME)
             .build();
     }
 }

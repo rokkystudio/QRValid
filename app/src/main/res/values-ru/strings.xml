@@ -8,6 +8,7 @@
     <string name="menu_help">Помощь</string>
     <string name="menu_more">Меню</string>
     <string name="menu_camera">Смена камеры</string>
+    <string name="menu_scanner">Сканер Вкл/Выкл</string>
 
     <string name="dialog_clear">Очистить результат сканирования?</string>
     <string name="toast_front_camera">Передняя камера включена.</string>

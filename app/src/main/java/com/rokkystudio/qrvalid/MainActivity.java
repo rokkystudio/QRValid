@@ -17,8 +17,10 @@ import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
+import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -44,8 +46,6 @@ import java.util.List;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import ezvcard.VCardVersion;
-import ezvcard.property.FormattedName;
-import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
 
 public class MainActivity extends AppCompatActivity implements
@@ -97,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements
     private String mLastBarcode;
 
     private WebView mWebView;
+
+    private boolean mIsScannerActive = true;
 
     @Override
     @SuppressLint("SetJavaScriptEnabled")
@@ -162,11 +164,11 @@ public class MainActivity extends AppCompatActivity implements
         if (mSharedPreferences.getBoolean(FRONT_CAMERA, false)) {
             mBarcodeView.switchToFront();
         } else {
-
             mBarcodeView.switchToBack();
         }
 
         mBarcodeView.decodeContinuous(new MyBarcodeCallback());
+        mIsScannerActive = true;
 
         initTorch();
         initWebView();
@@ -271,8 +273,24 @@ public class MainActivity extends AppCompatActivity implements
     {
         if (mSharedPreferences == null) return false;
 
+        // SCANNER ACTIVATE MENU BUTTON CLICK
+        if (item.getItemId() == R.id.MenuScanner)
+        {
+            if (mIsScannerActive) {
+                mIsScannerActive = false;
+                mBarcodeView.pause();
+                mBarcodeView.setVisibility(View.GONE);
+                item.setIcon(R.drawable.scanner_inactive);
+            } else {
+                mIsScannerActive = true;
+                mBarcodeView.resume();
+                mBarcodeView.setVisibility(View.VISIBLE);
+                item.setIcon(R.drawable.scanner_active);
+            }
+        }
+
         // CAMERA MENU BUTTON CLICK
-        if (item.getItemId() == R.id.MenuCamera)
+        else if (item.getItemId() == R.id.MenuCamera)
         {
             boolean isFrontCamera = !mSharedPreferences.getBoolean(FRONT_CAMERA, false);
             SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -426,9 +444,29 @@ public class MainActivity extends AppCompatActivity implements
 
             if (mWebView == null) return;
 
-            parseVCard(barcode);
-            String data = barcode.replace("\r\n", "<br>").replace ("\n", "<br>");
-            mWebView.loadData(data, "text/html", "utf-8");
+            if (URLUtil.isValidUrl(barcode)) {
+                // Диалог:
+                // Открыть в браузере
+                // Открыть в программе
+                // Показать текст ссылки (с кнопкой открывания)
+                // Запомнить и автоматически выбирать (можно изменить через настройки)
+                String url = "<a href=\"" + barcode + "\">" + barcode + "</a>";
+                mWebView.loadData(url, "text/html", "utf-8");
+            }
+
+            // else if (vcard) {
+                // Диалог:
+                // Сохранить контакт
+                // Отобразить данные (с кнопкой добления)
+                // Запомнить и автоматически выбирать (можно изменить через настройки)
+                //parseVCard(barcode);
+                //String data = barcode.replace("\r\n", "<br>").replace ("\n", "<br>");
+                // mWebView.loadData(data, "text/html", "utf-8");
+            // }
+
+            else {
+                mWebView.loadData(barcode, "text/html", "utf-8");
+            }
 
             /*
             if (isValidUrl(barcode)) {
@@ -459,7 +497,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private boolean isValidUrl(String barcode) {
+    private boolean isGosUslugiUrl(String barcode) {
         return barcode.contains("gosuslugi.ru/vaccine/cert/") ||
                barcode.contains("gosuslugi.ru/covid-cert/");
     }
