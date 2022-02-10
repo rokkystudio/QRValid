@@ -444,6 +444,7 @@ public class MainActivity extends AppCompatActivity implements
 
             if (mWebView == null) return;
 
+            /*
             if (URLUtil.isValidUrl(barcode)) {
                 // Диалог:
                 // Открыть в браузере
@@ -453,6 +454,7 @@ public class MainActivity extends AppCompatActivity implements
                 String url = "<a href=\"" + barcode + "\">" + barcode + "</a>";
                 mWebView.loadData(url, "text/html", "utf-8");
             }
+            */
 
             // else if (vcard) {
                 // Диалог:
@@ -468,14 +470,12 @@ public class MainActivity extends AppCompatActivity implements
                 mWebView.loadData(barcode, "text/html", "utf-8");
             }
 
-            /*
-            if (isValidUrl(barcode)) {
+            if (isGosUslugiUrl(barcode)) {
                 // mWebView.loadUrl("file:///android_asset/loading.html");
                 mWebView.loadUrl(barcode);
             } else {
                 mWebView.loadUrl("file:///android_asset/wrong.html");
             }
-            */
         }
     }
 
