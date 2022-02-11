@@ -19,5 +19,7 @@
     <string name="toast_vibration_on">Vibration is on.</string>
     <string name="toast_vibration_off">Vibration is off.</string>
     <string name="toast_torch_not_available">Torch feature not available</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

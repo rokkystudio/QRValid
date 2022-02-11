@@ -34,4 +34,5 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
     implementation 'com.google.android.material:material:1.5.0'
     api 'com.googlecode.ez-vcard:ez-vcard:0.11.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
