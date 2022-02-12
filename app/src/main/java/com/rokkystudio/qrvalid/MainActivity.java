@@ -21,6 +21,8 @@ import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -92,66 +94,30 @@ public class MainActivity extends AppCompatActivity
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        mPermissionResult.launch(Manifest.permission.CAMERA);
+    }
+
+    private void startScanner() {
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.MainFrame, new ScannerFragment())
             .addToBackStack(ScannerFragment.class.getName())
             .commit();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    private static class CameraRequestPermission extends ActivityResultContracts {
+
     }
 
-    public boolean onPrepareOptionsMenu(Menu menu)
-    {
-        if (mSharedPreferences == null) return false;
-
-        boolean isFrontCamera = mSharedPreferences.getBoolean(FRONT_CAMERA, false);
-        MenuItem itemCamera = menu.findItem(R.id.MenuCamera);
-        if (itemCamera != null) {
-            if (isFrontCamera) {
-                itemCamera.setIcon(R.drawable.camera_front);
-            } else {
-                itemCamera.setIcon(R.drawable.camera_back);
+    private final ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            result -> {
+                if (result) {
+                    startScanner();
+                } else {
+                    onBackPressed();
+                }
             }
-        }
-
-        boolean stateTorch = mSharedPreferences.getBoolean(STATE_TORCH, false);
-        MenuItem itemTorch = menu.findItem(R.id.MenuTorch);
-        if (itemTorch != null) {
-            if (stateTorch) {
-                itemTorch.setIcon(R.drawable.torch_on);
-            } else {
-                itemTorch.setIcon(R.drawable.torch_off);
-            }
-        }
-
-        boolean stateSound = mSharedPreferences.getBoolean(STATE_SOUND, false);
-        MenuItem itemSound = menu.findItem(R.id.MenuSound);
-        if (itemSound != null) {
-            if (stateSound) {
-                itemSound.setIcon(R.drawable.sound_on);
-            } else {
-                itemSound.setIcon(R.drawable.sound_off);
-            }
-        }
-
-        boolean stateVibrate = mSharedPreferences.getBoolean(STATE_VIBRATION, false);
-        MenuItem itemVibrate = menu.findItem(R.id.MenuVibration);
-        if (itemVibrate != null) {
-            if (stateVibrate) {
-                itemVibrate.setIcon(R.drawable.vibration_on);
-            } else {
-                itemVibrate.setIcon(R.drawable.vibration_off);
-            }
-        }
-
-        return true;
-    }
-
-
+    );
 
     private void parseVCard(String data)
     {

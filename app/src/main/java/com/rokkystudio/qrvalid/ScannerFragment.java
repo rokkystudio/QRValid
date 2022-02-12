@@ -4,7 +4,9 @@ import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 import static android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW;
 
 import static com.rokkystudio.qrvalid.MainActivity.FRONT_CAMERA;
+import static com.rokkystudio.qrvalid.MainActivity.STATE_SOUND;
 import static com.rokkystudio.qrvalid.MainActivity.STATE_TORCH;
+import static com.rokkystudio.qrvalid.MainActivity.STATE_VIBRATION;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -57,7 +59,7 @@ public class ScannerFragment extends Fragment implements
     SharedPreferences.OnSharedPreferenceChangeListener
 {
     private WebView mWebView;
-    private View mLoadingView;
+    private ViewGroup mLoadingView;
 
     private ScannerView mScannerBarcode;
     private String mLastBarcode;
@@ -82,6 +84,8 @@ public class ScannerFragment extends Fragment implements
         Activity activity = getActivity();
         if (activity == null) return root;
 
+        mLoadingView = root.findViewById(R.id.ScannerLoading);
+
         mWebView = root.findViewById(R.id.ScannerWebView);
         mWebView.setWebViewClient(new MyWebViewClient());
         WebSettings settings = mWebView.getSettings();
@@ -104,33 +108,13 @@ public class ScannerFragment extends Fragment implements
         PowerManager powerManager = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
         mWakeLock = powerManager.newWakeLock(FLAG_KEEP_SCREEN_ON, "QRValid:WakeTag");
 
+        initScanner();
 
-        mPermissionResult.launch(Manifest.permission.CAMERA);
-
-        /*
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.CAMERA }, CAMERA_REQUEST_CODE);
-        } else {
-            initScanner();
-        }
-        */
-
+        setHasOptionsMenu(true);
         return root;
     }
 
-    private final ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(
-        new ActivityResultContracts.RequestPermission(),
-        result -> {
-            if (result) {
-                initScanner();
-            } else {
-                Activity activity = getActivity();
-                if (activity != null) {
-                    activity.getFragmentManager().popBackStack();
-                }
-            }
-        }
-    );
+
 
     /*
     @Override
@@ -147,9 +131,63 @@ public class ScannerFragment extends Fragment implements
     */
 
     @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu)
+    {
+        super.onPrepareOptionsMenu(menu);
+        if (mSharedPreferences == null) return;
+
+        boolean isFrontCamera = mSharedPreferences.getBoolean(FRONT_CAMERA, false);
+        MenuItem itemCamera = menu.findItem(R.id.MenuCamera);
+        if (itemCamera != null) {
+            if (isFrontCamera) {
+                itemCamera.setIcon(R.drawable.camera_front);
+            } else {
+                itemCamera.setIcon(R.drawable.camera_back);
+            }
+        }
+
+        boolean stateTorch = mSharedPreferences.getBoolean(STATE_TORCH, false);
+        MenuItem itemTorch = menu.findItem(R.id.MenuTorch);
+        if (itemTorch != null) {
+            if (stateTorch) {
+                itemTorch.setIcon(R.drawable.torch_on);
+            } else {
+                itemTorch.setIcon(R.drawable.torch_off);
+            }
+        }
+
+        boolean stateSound = mSharedPreferences.getBoolean(STATE_SOUND, false);
+        MenuItem itemSound = menu.findItem(R.id.MenuSound);
+        if (itemSound != null) {
+            if (stateSound) {
+                itemSound.setIcon(R.drawable.sound_on);
+            } else {
+                itemSound.setIcon(R.drawable.sound_off);
+            }
+        }
+
+        boolean stateVibrate = mSharedPreferences.getBoolean(STATE_VIBRATION, false);
+        MenuItem itemVibrate = menu.findItem(R.id.MenuVibration);
+        if (itemVibrate != null) {
+            if (stateVibrate) {
+                itemVibrate.setIcon(R.drawable.vibration_on);
+            } else {
+                itemVibrate.setIcon(R.drawable.vibration_off);
+            }
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         if (mSharedPreferences == null) return false;
+        if (getContext() == null) return false;
 
         // SCANNER ACTIVATE MENU BUTTON CLICK
         if (item.getItemId() == R.id.MenuScanner)
@@ -176,7 +214,7 @@ public class ScannerFragment extends Fragment implements
             editor.apply();
 
             if (isFrontCamera) {
-                Toast.makeText(this, "Front camera activation", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Front camera activation", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.camera_front);
 
                 if (mScannerBarcode != null) {
@@ -184,7 +222,7 @@ public class ScannerFragment extends Fragment implements
                 }
 
             } else {
-                Toast.makeText(this, "Back camera activation", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Back camera activation", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.camera_back);
 
                 if (mScannerBarcode != null) {
@@ -202,10 +240,10 @@ public class ScannerFragment extends Fragment implements
             editor.apply();
 
             if (stateTorch) {
-                Toast.makeText(this, "Torch is burning.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Torch is burning.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.torch_on);
             } else {
-                Toast.makeText(this, "Torch is extinguished.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Torch is extinguished.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.torch_off);
             }
         }
@@ -219,14 +257,14 @@ public class ScannerFragment extends Fragment implements
             editor.apply();
 
             if (stateSound) {
-                Toast.makeText(this, "Sounds are heard.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Sounds are heard.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.sound_on);
 
                 if (mResponseManager != null) {
                     mResponseManager.soundActivate();
                 }
             } else {
-                Toast.makeText(this, "Sounds are silent.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Sounds are silent.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.sound_off);
             }
         }
@@ -240,14 +278,14 @@ public class ScannerFragment extends Fragment implements
             editor.apply();
 
             if (stateVibration) {
-                Toast.makeText(this, "Vibration is on.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Vibration is on.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.vibration_on);
 
                 if (mResponseManager != null) {
                     mResponseManager.vibrateActivate();
                 }
             } else {
-                Toast.makeText(this, "Vibration is off.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Vibration is off.", Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.vibration_off);
             }
         }
@@ -387,7 +425,7 @@ public class ScannerFragment extends Fragment implements
             if (barcode == null || barcode.equals(mLastBarcode)) return;
 
             // mWebView.loadUrl("about:blank");
-            mWebView.loadUrl("file:///android_asset/loading.html");
+            // mWebView.loadUrl("file:///android_asset/loading.html");
 
             // Toast.makeText(MainActivity.this, barcode, Toast.LENGTH_SHORT).show();
 
@@ -468,7 +506,6 @@ public class ScannerFragment extends Fragment implements
              */
 
             injectCSS(webView);
-            super.onPageFinished(webView, url);
         }
 
         private void injectJS(WebView webView)
