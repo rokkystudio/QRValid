@@ -8,7 +8,6 @@ import static com.rokkystudio.qrvalid.MainActivity.STATE_SOUND;
 import static com.rokkystudio.qrvalid.MainActivity.STATE_TORCH;
 import static com.rokkystudio.qrvalid.MainActivity.STATE_VIBRATION;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -19,19 +18,13 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Base64;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,6 +37,7 @@ import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
@@ -59,7 +53,7 @@ public class ScannerFragment extends Fragment implements
     SharedPreferences.OnSharedPreferenceChangeListener
 {
     private WebView mWebView;
-    private ViewGroup mLoadingView;
+    private ProgressBar mProgress;
 
     private ScannerView mScannerBarcode;
     private String mLastBarcode;
@@ -84,7 +78,7 @@ public class ScannerFragment extends Fragment implements
         Activity activity = getActivity();
         if (activity == null) return root;
 
-        mLoadingView = root.findViewById(R.id.ScannerLoading);
+        mProgress = root.findViewById(R.id.ScannerProgress);
 
         mWebView = root.findViewById(R.id.ScannerWebView);
         mWebView.setWebViewClient(new MyWebViewClient());
@@ -113,8 +107,6 @@ public class ScannerFragment extends Fragment implements
         setHasOptionsMenu(true);
         return root;
     }
-
-
 
     /*
     @Override
@@ -184,7 +176,7 @@ public class ScannerFragment extends Fragment implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         if (mSharedPreferences == null) return false;
         if (getContext() == null) return false;
@@ -427,8 +419,6 @@ public class ScannerFragment extends Fragment implements
             // mWebView.loadUrl("about:blank");
             // mWebView.loadUrl("file:///android_asset/loading.html");
 
-            // Toast.makeText(MainActivity.this, barcode, Toast.LENGTH_SHORT).show();
-
             if (mSharedPreferences.getBoolean(STATE_SOUND, false)) {
                 if (mResponseManager != null) {
                     mResponseManager.soundScan();
@@ -484,14 +474,14 @@ public class ScannerFragment extends Fragment implements
         }
 
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            mLoadingView.setVisibility(View.VISIBLE);
+            mProgress.setVisibility(View.VISIBLE);
             mWebView.setVisibility(View.GONE);
         }
 
         @Override
         public void onPageFinished(WebView webView, String url)
         {
-            mLoadingView.setVisibility(View.GONE);
+            mProgress.setVisibility(View.GONE);
             mWebView.setVisibility(View.VISIBLE);
 
             /*

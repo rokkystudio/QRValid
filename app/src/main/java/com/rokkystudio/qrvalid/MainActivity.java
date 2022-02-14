@@ -79,8 +79,6 @@ public class MainActivity extends AppCompatActivity
     public static final String STATE_SOUND      = "SOUND";
     public static final String STATE_VIBRATION  = "VIBRATION";
 
-    private SharedPreferences mSharedPreferences = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -92,8 +90,6 @@ public class MainActivity extends AppCompatActivity
             setSupportActionBar(toolbar);
         }
 
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         mPermissionResult.launch(Manifest.permission.CAMERA);
     }
 
@@ -104,19 +100,15 @@ public class MainActivity extends AppCompatActivity
             .commit();
     }
 
-    private static class CameraRequestPermission extends ActivityResultContracts {
-
-    }
-
     private final ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(),
-            result -> {
-                if (result) {
-                    startScanner();
-                } else {
-                    onBackPressed();
-                }
+        new ActivityResultContracts.RequestPermission(),
+        result -> {
+            if (result) {
+                startScanner();
+            } else {
+                onBackPressed();
             }
+        }
     );
 
     private void parseVCard(String data)
