@@ -1,15 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="MyTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="MyTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">#FFCCCCCC</item>
         <item name="colorPrimaryDark">#FF337788</item>
-        <item name="colorAccent">#FF773344</item>
+        <item name="colorAccent">#FF666666</item>
+        <item name="android:textColorHighlight">#FF337788</item>
     </style>
 
-    <style name="MyTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+    <style name="MyTheme.AppBarOverlay" parent="ThemeOverlay.Material3.Light">
         <item name="android:textColorPrimary">#FF333333</item>
         <item name="android:textColorSecondary">#FF442266</item>
     </style>
 
-    <style name="MyTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+    <style name="MyTheme.PopupOverlay" parent="ThemeOverlay.Material3.Light">
     </style>
 </resources>

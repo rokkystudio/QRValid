@@ -282,13 +282,6 @@ public class ScannerFragment extends Fragment implements
             }
         }
 
-        // HELP MENU BUTTON CLICK
-        else if (item.getItemId() == R.id.MenuHelp) {
-            if (mWebView != null) {
-                mWebView.loadUrl("file:///android_asset/help.html");
-            }
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -416,6 +409,7 @@ public class ScannerFragment extends Fragment implements
             String barcode = result.getText();
             if (barcode == null || barcode.equals(mLastBarcode)) return;
 
+            if (mWebView == null) return;
             // mWebView.loadUrl("about:blank");
             // mWebView.loadUrl("file:///android_asset/loading.html");
 
@@ -432,8 +426,6 @@ public class ScannerFragment extends Fragment implements
             }
 
             mLastBarcode = barcode;
-
-            if (mWebView == null) return;
 
             /*
             if (URLUtil.isValidUrl(barcode)) {

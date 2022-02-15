@@ -37,9 +37,9 @@
                 android:icon="@drawable/vibration_on" />
 
             <item
-                android:id="@+id/MenuHelp"
-                android:title="@string/menu_help"
-                android:icon="@drawable/help" />
+                android:id="@+id/MenuSettings"
+                android:title="@string/menu_settings"
+                android:icon="@drawable/settings" />
         </menu>
     </item>
 </menu>

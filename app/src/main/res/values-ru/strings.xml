@@ -5,6 +5,7 @@
     <string name="menu_torch">Фонарь</string>
     <string name="menu_sound">Звук</string>
     <string name="menu_vibration">Вибрация</string>
+    <string name="menu_settings">Настройки</string>
     <string name="menu_help">Помощь</string>
     <string name="menu_more">Меню</string>
     <string name="menu_camera">Смена камеры</string>
@@ -20,4 +21,8 @@
     <string name="toast_vibration_on">Вибрация включена.</string>
     <string name="toast_vibration_off">Вибрация выключена.</string>
     <string name="toast_torch_not_available">Фонарь не доступен.</string>
+
+    <string name="barcode_web_behavior">Поведение веб адреса</string>
+    <string name="barcode_types">Типы штрихкодов</string>
+
 </resources>

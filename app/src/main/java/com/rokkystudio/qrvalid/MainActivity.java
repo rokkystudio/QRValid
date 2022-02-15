@@ -3,6 +3,8 @@ package com.rokkystudio.qrvalid;
 import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 import static android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW;
 
+import static java.security.AccessController.getContext;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -95,8 +97,7 @@ public class MainActivity extends AppCompatActivity
 
     private void startScanner() {
         getSupportFragmentManager().beginTransaction()
-            .replace(R.id.MainFrame, new ScannerFragment())
-            .addToBackStack(ScannerFragment.class.getName())
+            .add(R.id.MainFrame, new ScannerFragment())
             .commit();
     }
 
@@ -110,6 +111,21 @@ public class MainActivity extends AppCompatActivity
             }
         }
     );
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        // SETTINGS MENU BUTTON CLICK
+        if (item.getItemId() == R.id.MenuSettings) {
+            getSupportFragmentManager().beginTransaction()
+                .replace(R.id.MainFrame, new SettingsFragment())
+                .addToBackStack(SettingsFragment.class.getName())
+                .commit();
+
+            return true;
+        }
+        return false;
+    }
 
     private void parseVCard(String data)
     {

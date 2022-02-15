@@ -1,0 +1,61 @@
+<resources>
+
+    <string-array name="barcode_web_entries">
+        <item>Only display web address.</item>
+        <item>Open in built-in scanner window.</item>
+        <item>Open in internal app browser.</item>
+        <item>Open in external phone browser.</item>
+    </string-array>
+
+    <string-array name="barcode_web_values">
+        <item>display</item>
+        <item>built-in</item>
+        <item>internal</item>
+        <item>external</item>
+    </string-array>
+
+    <string-array name="barcode_types_entries">
+        <item>Aztec 2D</item>
+        <item>Codabar</item>
+        <item>Code 39</item>
+        <item>CODE 93</item>
+        <item>CODE 128</item>
+        <item>Data matrix</item>
+        <item>EAN 8</item>
+        <item>EAN 13</item>
+        <item>ITF</item>
+        <item>Maxicode</item>
+        <item>PDF 417</item>
+        <item>QR code</item>
+        <item>RSS 14</item>
+        <item>RSS expanded</item>
+        <item>UPC A</item>
+        <item>UPC E</item>
+        <item>UPC EAN extension</item>
+    </string-array>
+
+    <string-array name="barcode_types_values">
+        <item>AZTEC</item>
+        <item>CODABAR</item>
+        <item>CODE_39</item>
+        <item>CODE_93</item>
+        <item>CODE_128</item>
+        <item>DATA_MATRIX</item>
+        <item>EAN_8</item>
+        <item>EAN_13</item>
+        <item>ITF</item>
+        <item>MAXICODE</item>
+        <item>PDF_417</item>
+        <item>QR_CODE</item>
+        <item>RSS_14</item>
+        <item>RSS_EXPANDED</item>
+        <item>UPC_A</item>
+        <item>UPC_E</item>
+        <item>UPC_EAN_EXTENSION</item>
+    </string-array>
+
+    <string-array name="barcode_types_default">
+        <item>QR_CODE</item>
+    </string-array>
+
+</resources>

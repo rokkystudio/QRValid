@@ -1,0 +1,19 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ListPreference
+        app:title="@string/barcode_web_behavior"
+        app:entries="@array/barcode_web_entries"
+        app:entryValues="@array/barcode_web_values"
+        app:defaultValue="built-in"
+        app:useSimpleSummaryProvider="true"
+        app:key="barcode_web_behavior" />
+
+    <MultiSelectListPreference
+        android:title="@string/barcode_types"
+        android:summary="Select barcode types to scan."
+        android:entries="@array/barcode_types_entries"
+        android:entryValues="@array/barcode_types_entries"
+        android:key="barcode_types" />
+
+</PreferenceScreen>
