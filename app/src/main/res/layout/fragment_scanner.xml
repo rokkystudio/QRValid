@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.rokkystudio.qrvalid.ScannerView
+    <com.rokkystudio.qrscan.ScannerView
         android:id="@+id/ScannerBarcode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

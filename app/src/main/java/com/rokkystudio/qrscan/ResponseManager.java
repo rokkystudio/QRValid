@@ -1,4 +1,4 @@
-package com.rokkystudio.qrvalid;
+package com.rokkystudio.qrscan;
 
 import android.app.Activity;
 import android.content.Context;

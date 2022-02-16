@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.rokkystudio.qrvalid">
+    package="com.rokkystudio.qrscan">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -27,7 +27,7 @@
         tools:targetApi="s">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.rokkystudio.qrscan.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

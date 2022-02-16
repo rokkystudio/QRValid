@@ -1,42 +1,16 @@
-package com.rokkystudio.qrvalid;
-
-import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-import static android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW;
-
-import static java.security.AccessController.getContext;
+package com.rokkystudio.qrscan;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.PowerManager;
-import android.preference.PreferenceManager;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.webkit.CookieManager;
-import android.webkit.WebSettings;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import com.google.zxing.BarcodeFormat;
-import com.journeyapps.barcodescanner.DefaultDecoderFactory;
-
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import ezvcard.Ezvcard;

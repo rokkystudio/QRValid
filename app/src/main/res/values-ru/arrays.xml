@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="barcode_web_entries">
+        <item>Показать веб-адрес.</item>
+        <item>Открыть в окне сканнера.</item>
+        <item>Открыть в браузере приложения.</item>
+        <item>Открыть в браузере устройства.</item>
+    </string-array>
+
+</resources>

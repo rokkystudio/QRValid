@@ -1,4 +1,4 @@
-package com.rokkystudio.qrvalid;
+package com.rokkystudio.qrscan;
 
 import android.accounts.AccountManager;
 import android.content.ContentProviderOperation;

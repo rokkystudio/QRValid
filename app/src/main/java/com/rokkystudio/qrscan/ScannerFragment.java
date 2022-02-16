@@ -1,12 +1,12 @@
-package com.rokkystudio.qrvalid;
+package com.rokkystudio.qrscan;
 
 import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 import static android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW;
 
-import static com.rokkystudio.qrvalid.MainActivity.FRONT_CAMERA;
-import static com.rokkystudio.qrvalid.MainActivity.STATE_SOUND;
-import static com.rokkystudio.qrvalid.MainActivity.STATE_TORCH;
-import static com.rokkystudio.qrvalid.MainActivity.STATE_VIBRATION;
+import static com.rokkystudio.qrscan.MainActivity.FRONT_CAMERA;
+import static com.rokkystudio.qrscan.MainActivity.STATE_SOUND;
+import static com.rokkystudio.qrscan.MainActivity.STATE_TORCH;
+import static com.rokkystudio.qrscan.MainActivity.STATE_VIBRATION;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

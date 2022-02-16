@@ -1,10 +1,10 @@
 <resources>
 
     <string-array name="barcode_web_entries">
-        <item>Only display web address.</item>
-        <item>Open in built-in scanner window.</item>
-        <item>Open in internal app browser.</item>
-        <item>Open in external phone browser.</item>
+        <item>Display web address.</item>
+        <item>Open in scanner window.</item>
+        <item>Open in app browser.</item>
+        <item>Open in device browser.</item>
     </string-array>
 
     <string-array name="barcode_web_values">
