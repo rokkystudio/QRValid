@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.rokkystudio.qrscan.ScannerView
+    <com.rokkystudio.qrvalid.ScannerView
         android:id="@+id/ScannerBarcode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -23,19 +23,31 @@
         android:id="@+id/ScannerWebView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:visibility="gone"/>
 
-    <ScrollView
-        android:id="@+id/ScannerTextScroll"
+    <TextView
+        android:id="@+id/ScannerIndexText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="20dp">
+        android:textSize="24sp"
+        android:gravity="center"
+        android:text="@string/scanner_index_text"/>
+
+    <ScrollView
+        android:id="@+id/ScannerSimpleScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="20dp"
+        android:visibility="gone">
 
         <TextView
-            android:id="@+id/ScannerTextView"
+            android:id="@+id/ScannerSimpleText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
 
     </ScrollView>
 

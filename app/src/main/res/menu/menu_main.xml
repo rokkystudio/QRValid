@@ -39,7 +39,8 @@
             <item
                 android:id="@+id/MenuSettings"
                 android:title="@string/menu_settings"
-                android:icon="@drawable/settings" />
+                android:icon="@drawable/settings"
+                android:visible="false" />
         </menu>
     </item>
 </menu>

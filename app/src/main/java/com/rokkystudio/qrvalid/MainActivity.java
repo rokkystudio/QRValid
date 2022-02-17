@@ -1,4 +1,4 @@
-package com.rokkystudio.qrscan;
+package com.rokkystudio.qrvalid;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -122,9 +122,5 @@ public class MainActivity extends AppCompatActivity
     private boolean isGosUslugiUrl(String barcode) {
         return barcode.contains("gosuslugi.ru/vaccine/cert/") ||
                barcode.contains("gosuslugi.ru/covid-cert/");
-    }
-
-    private void validateCertificate(String html) {
-        Toast.makeText(this, html, Toast.LENGTH_LONG).show();
     }
 }

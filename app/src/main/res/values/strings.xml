@@ -24,4 +24,6 @@
     <string name="barcode_web_behavior">Web address behavior</string>
     <string name="barcode_types">Barcode types</string>
 
+    <string name="scanner_index_text">Use the camera\nto scan the QR code.</string>
+
 </resources>

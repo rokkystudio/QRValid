@@ -25,4 +25,6 @@
     <string name="barcode_web_behavior">Поведение веб адреса</string>
     <string name="barcode_types">Типы штрихкодов</string>
 
+    <string name="scanner_index_text">Используйте камеру,\nчтобы отсканировать QR-код.</string>
+
 </resources>

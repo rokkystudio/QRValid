@@ -1,12 +1,14 @@
-package com.rokkystudio.qrscan;
+package com.rokkystudio.qrvalid;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 import static android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW;
 
-import static com.rokkystudio.qrscan.MainActivity.FRONT_CAMERA;
-import static com.rokkystudio.qrscan.MainActivity.STATE_SOUND;
-import static com.rokkystudio.qrscan.MainActivity.STATE_TORCH;
-import static com.rokkystudio.qrscan.MainActivity.STATE_VIBRATION;
+import static com.rokkystudio.qrvalid.MainActivity.FRONT_CAMERA;
+import static com.rokkystudio.qrvalid.MainActivity.STATE_SOUND;
+import static com.rokkystudio.qrvalid.MainActivity.STATE_TORCH;
+import static com.rokkystudio.qrvalid.MainActivity.STATE_VIBRATION;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -38,6 +40,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
@@ -52,8 +56,10 @@ import java.util.Collections;
 public class ScannerFragment extends Fragment implements
     SharedPreferences.OnSharedPreferenceChangeListener
 {
-    private WebView mWebView;
-    private ProgressBar mProgress;
+    private WebView mWebView = null;
+    private ProgressBar mScannerProgress = null;
+    private ScrollView mScannerSimpleScroll = null;
+    private TextView mScannerIndexText = null;
 
     private ScannerView mScannerBarcode;
     private String mLastBarcode;
@@ -78,7 +84,9 @@ public class ScannerFragment extends Fragment implements
         Activity activity = getActivity();
         if (activity == null) return root;
 
-        mProgress = root.findViewById(R.id.ScannerProgress);
+        mScannerProgress = root.findViewById(R.id.ScannerProgress);
+        mScannerSimpleScroll = root.findViewById(R.id.ScannerSimpleScroll);
+        mScannerIndexText = root.findViewById(R.id.ScannerIndexText);
 
         mWebView = root.findViewById(R.id.ScannerWebView);
         mWebView.setWebViewClient(new MyWebViewClient());
@@ -187,12 +195,12 @@ public class ScannerFragment extends Fragment implements
             if (mIsScannerActive) {
                 mIsScannerActive = false;
                 mScannerBarcode.pause();
-                mScannerBarcode.setVisibility(View.GONE);
+                mScannerBarcode.setVisibility(GONE);
                 item.setIcon(R.drawable.scanner_inactive);
             } else {
                 mIsScannerActive = true;
                 mScannerBarcode.resume();
-                mScannerBarcode.setVisibility(View.VISIBLE);
+                mScannerBarcode.setVisibility(VISIBLE);
                 item.setIcon(R.drawable.scanner_active);
             }
         }
@@ -354,7 +362,7 @@ public class ScannerFragment extends Fragment implements
         mIsScannerActive = true;
 
         initTorch();
-        initWebView();
+        resetScanner();
     }
 
     private void initTorch()
@@ -389,15 +397,25 @@ public class ScannerFragment extends Fragment implements
 
         new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Dialog_Alert)
             .setMessage(R.string.dialog_clear)
-            .setPositiveButton(android.R.string.yes, (dialog, which) -> initWebView())
+            .setPositiveButton(android.R.string.yes, (dialog, which) -> resetScanner())
             .setNegativeButton(android.R.string.no, null)
             .show();
     }
 
-    private void initWebView() {
+    private void resetScanner()
+    {
+        mLastBarcode = "";
+
+        if (mScannerIndexText != null) {
+            mScannerIndexText.setVisibility(VISIBLE);
+        }
+
+        if (mScannerProgress != null) {
+            mScannerProgress.setVisibility(GONE);
+        }
+
         if (mWebView != null) {
-            mLastBarcode = "";
-            mWebView.loadUrl("file:///android_asset/index.html");
+            mWebView.setVisibility(GONE);
         }
     }
 
@@ -408,10 +426,6 @@ public class ScannerFragment extends Fragment implements
         {
             String barcode = result.getText();
             if (barcode == null || barcode.equals(mLastBarcode)) return;
-
-            if (mWebView == null) return;
-            // mWebView.loadUrl("about:blank");
-            // mWebView.loadUrl("file:///android_asset/loading.html");
 
             if (mSharedPreferences.getBoolean(STATE_SOUND, false)) {
                 if (mResponseManager != null) {
@@ -427,34 +441,37 @@ public class ScannerFragment extends Fragment implements
 
             mLastBarcode = barcode;
 
-            /*
-            if (URLUtil.isValidUrl(barcode)) {
-                // Диалог:
-                // Открыть в браузере
-                // Открыть в программе
-                // Показать текст ссылки (с кнопкой открывания)
-                // Запомнить и автоматически выбирать (можно изменить через настройки)
-                String url = "<a href=\"" + barcode + "\">" + barcode + "</a>";
-                mWebView.loadData(url, "text/html", "utf-8");
-            }
-            */
-
+            // VCARD BEHAVIOR
             // else if (vcard) {
             // Диалог:
             // Сохранить контакт
             // Отобразить данные (с кнопкой добления)
             // Запомнить и автоматически выбирать (можно изменить через настройки)
-            //parseVCard(barcode);
-            //String data = barcode.replace("\r\n", "<br>").replace ("\n", "<br>");
+            // parseVCard(barcode);
+            // String data = barcode.replace("\r\n", "<br>").replace ("\n", "<br>");
             // mWebView.loadData(data, "text/html", "utf-8");
             // }
 
-            if (URLUtil.isValidUrl(barcode)) {
-                mWebView.loadUrl(barcode);
-            } else {
-                mWebView.loadData(barcode, "text/html", "utf-8");
-                // mWebView.loadUrl("file:///android_asset/wrong.html");
+            // WEB ADDRESS BEHAVIOR
+            if (URLUtil.isValidUrl(barcode))
+            {
+                // Открыть в браузере ?
+                // Открыть в программе ?
+                // Показать текст ссылки (с кнопкой открывания) ?
+                // Запомнить и автоматически выбирать (можно изменить через настройки)
+                // String url = "<a href=\"" + barcode + "\">" + barcode + "</a>";
+                // mWebView.loadData(url, "text/html", "utf-8");
+
+                if (mWebView != null) {
+                    mWebView.loadUrl(barcode);
+                    mWebView.setVisibility(GONE);
+                }
+
+                return;
             }
+
+            // SIMPLE TEXT BEHAVIOR
+            mWebView.loadData(barcode, "text/html", "utf-8");
         }
     }
 
@@ -465,27 +482,43 @@ public class ScannerFragment extends Fragment implements
             handler.cancel();
         }
 
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            mProgress.setVisibility(View.VISIBLE);
-            mWebView.setVisibility(View.GONE);
+        public void onPageStarted(WebView view, String url, Bitmap favicon)
+        {
+            if (mScannerIndexText != null) {
+                mScannerIndexText.setVisibility(GONE);
+            }
+
+            if (mScannerSimpleScroll != null) {
+                mScannerSimpleScroll.setVisibility(GONE);
+            }
+
+            if (mWebView != null) {
+                mWebView.setVisibility(GONE);
+            }
+
+            if (mScannerProgress != null) {
+                mScannerProgress.setVisibility(VISIBLE);
+            }
         }
 
         @Override
         public void onPageFinished(WebView webView, String url)
         {
-            mProgress.setVisibility(View.GONE);
-            mWebView.setVisibility(View.VISIBLE);
+            if (mScannerIndexText != null) {
+                mScannerIndexText.setVisibility(GONE);
+            }
 
-            /*
-            webView.evaluateJavascript(
-              // "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
-                "(function() {" +
-                          "var elem = document.querySelectorAll('.status-container.complete, .complete-image');" +
-                          "var style = getComputedStyle(elem);" +
-                          "return (elem);" +
-                      "})();",
-                    MainActivity.this::validateCertificate);
-             */
+            if (mScannerSimpleScroll != null) {
+                mScannerSimpleScroll.setVisibility(GONE);
+            }
+
+            if (mScannerProgress != null) {
+                mScannerProgress.setVisibility(GONE);
+            }
+
+            if (mWebView != null) {
+                mWebView.setVisibility(VISIBLE);
+            }
 
             injectCSS(webView);
         }
@@ -512,6 +545,17 @@ public class ScannerFragment extends Fragment implements
             }
         }
 
+        private void injectJS2(WebView webView) {
+            webView.evaluateJavascript(
+              // "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+                "(function() {" +
+                          "var elem = document.querySelectorAll('.status-container.complete, .complete-image');" +
+                          "var style = getComputedStyle(elem);" +
+                          "return (elem);" +
+                      "})();",
+                    this::validateCertificate);
+        }
+
         private void injectCSS(WebView webView)
         {
             if (getContext() == null) return;
@@ -533,6 +577,12 @@ public class ScannerFragment extends Fragment implements
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        private void validateCertificate(String html) {
+            if (getContext() == null) return;
+            Toast.makeText(getContext(), html, Toast.LENGTH_LONG).show();
+            // mWebView.loadUrl("file:///android_asset/wrong.html");
         }
     }
 }
